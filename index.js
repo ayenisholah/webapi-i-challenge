@@ -13,17 +13,21 @@ server.get('/api/users', (req, res) => {
             res.status(200).json(data);
         })
         .catch(({ code, message }) => {
-            res.status(404).json({ err: 'Not Found' });
+            res.status(500).json({ err: 'The users information could not be retrieved.' });
         });
 });
 
 // Post - Creates a user using the information sent inside the request body.
 server.post('/api/users', (req, res) => {
     const newUser = req.body;
-    console.log(req.body)
+    console.log(newUser)
     User.insert(newUser)
     .then(addedUser => {
-        res.status(201).json(addedUser);
+        if(newUser.name === null || newUser.bio === null){
+            res.status(400).json({ err: 'Please provide name and bio for the user.' })
+        } else {
+            res.status(201).json(addedUser);
+        }
     })
     .catch(({ code, message }) => {
         res.status(500).json({ err: 'There was an error while saving the user to the database' });
