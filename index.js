@@ -5,7 +5,7 @@ const User = require('./data/db.js');
 
 server.use(express.json())
 
-// Read - Get the list o
+// Read - Get the list of Users
 server.get('/api/users', (req, res) => {
     User.find()
         .then(data => {
@@ -40,10 +40,27 @@ server.delete('/api/users/:id', (req, res) => {
     })
     .catch(({ code, message }) => {
         res.status(404).json({ err: 'The user with the specified ID does not exist.' });
-        
-    })
-})
 
+    });
+});
+
+//Update - Updates the user with the specified id using data from the request body
+server.put('/api/users/:id', (req, res) => {
+    const { id } = req.params;
+    const changes = req.body;
+
+    User.update(id, changes)
+    .then(updatedHub => {
+        if (updatedHub) {
+            res.json(updatedHub)
+        } else {
+            res.status(404).json({ err: 'The user with the specified ID does not exist.' })
+        }
+    })
+    .catch(({ code, message }) => {
+        res.status(404).json({ err: 'The user with the specified ID does not exist.' })
+    });
+});
 
 server.listen(3333, () => {
     console.log('listening on 3333')
